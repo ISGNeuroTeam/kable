@@ -8,6 +8,15 @@ plugins {
     id("com.vanniktech.maven.publish")
 }
 
+/* ```
+ *   common
+ *   |-- js
+ *   |-- android
+ *   '-- apple
+ *       |-- ios
+ *       '-- macos
+ * ```
+ */
 kotlin {
     explicitApi()
 
@@ -15,6 +24,8 @@ kotlin {
     android {
         publishAllLibraryVariants()
     }
+    iosX64()
+    iosArm64()
     macosX64()
 
     sourceSets {
@@ -39,11 +50,24 @@ kotlin {
             }
         }
 
-        val macosX64Main by getting {
+        val appleMain by creating {
+            dependsOn(commonMain)
             dependencies {
                 api(coroutines("core", version = "1.4.2-native-mt!!"))
-                implementation(stately("isolate-macosx64"))
+                implementation(stately("isolate"))
             }
+        }
+
+        val macosX64Main by getting {
+            dependsOn(appleMain)
+        }
+
+        val iosX64Main by getting {
+            dependsOn(appleMain)
+        }
+
+        val iosArm64Main by getting {
+            dependsOn(appleMain)
         }
 
         all {
